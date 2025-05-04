@@ -21,9 +21,9 @@ public class UsuarioService {
 	public List<Usuario> findAllUsuario() {
 		List<Usuario> list = repository.findAll();
 		if (list.isEmpty()) {
-			return repository.findAll();
-		} else {
 			return null;
+		} else {
+			return repository.findAll();
 		}
 	}
 

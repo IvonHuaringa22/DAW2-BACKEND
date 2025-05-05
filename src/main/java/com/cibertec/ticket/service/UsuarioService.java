@@ -1,5 +1,6 @@
 package com.cibertec.ticket.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.cibertec.ticket.DTO.UsuarioDTO;
 import com.cibertec.ticket.model.Usuario;
 import com.cibertec.ticket.repository.IUsuarioRepository;
 
@@ -18,24 +20,42 @@ public class UsuarioService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	public List<Usuario> findAllUsuario() {
-		List<Usuario> list = repository.findAll();
-		if (list.isEmpty()) {
-			return null;
-		} else {
-			return repository.findAll();
-		}
+	public List<UsuarioDTO> findAllUsuario() {
+	    List<Usuario> usuarios = repository.findAll();
+	    if (usuarios.isEmpty()) {
+	        return null;
+	    }
+
+	    List<UsuarioDTO> dtoList = new ArrayList<>();
+	    for (Usuario usuario : usuarios) {
+	        UsuarioDTO dto = new UsuarioDTO();
+	        dto.setIdUsuario(usuario.getIdUsuario());
+	        dto.setNombre(usuario.getNombre());
+	        dto.setCorreo(usuario.getCorreo());
+	        dto.setRol(usuario.getRol());
+	        dtoList.add(dto);
+	    }
+
+	    return dtoList;
 	}
 
-	public Usuario findByIdUsuario(int id) {
+	public UsuarioDTO findByIdUsuario(int id) {
 		if (id >= 1) {
-			return repository.findById(id).orElse(null);
+			
+			Usuario u = repository.findById(id).orElse(null);
+			UsuarioDTO uDTO = new UsuarioDTO();
+			uDTO.setIdUsuario(u.getIdUsuario());
+			uDTO.setNombre(u.getNombre());
+			uDTO.setCorreo(u.getCorreo());
+			uDTO.setRol(u.getRol());
+			return uDTO;
+			
 		} else {
 			return null;
 		}
 	}
 
-	public Usuario saveUsuario(Usuario usuario) {
+	public UsuarioDTO saveUsuario(Usuario usuario) {
 		if (usuario.getNombre() == null || usuario.getNombre().isEmpty()) {
 			throw new IllegalArgumentException("Nombre es obligatorio.");
 		}
@@ -51,10 +71,16 @@ public class UsuarioService {
 		 String claveCodificada = passwordEncoder.encode(usuario.getContrasenia());
 		 usuario.setContrasenia(claveCodificada);
 		
-		return repository.save(usuario);
+		Usuario u = repository.save(usuario);
+		UsuarioDTO uDTO = new UsuarioDTO();
+		uDTO.setIdUsuario(u.getIdUsuario());
+		uDTO.setNombre(u.getNombre());
+		uDTO.setCorreo(u.getCorreo());
+		uDTO.setRol(u.getRol());
+		return uDTO;
 	}
 
-	public Usuario updateUsuario(Usuario usuario, int id) {
+	public UsuarioDTO updateUsuario(Usuario usuario, int id) {
 		Usuario update = repository.findById(id).orElse(null);
 		if (update == null) {
 			throw new BadCredentialsException("No existe ningún Usuario con ese id");
@@ -64,7 +90,13 @@ public class UsuarioService {
 		update.setCorreo(usuario.getCorreo());
 		update.setRol(usuario.getRol());
 
-		return repository.save(update);
+		Usuario u = repository.save(usuario);
+		UsuarioDTO uDTO = new UsuarioDTO();
+		uDTO.setIdUsuario(u.getIdUsuario());
+		uDTO.setNombre(u.getNombre());
+		uDTO.setCorreo(u.getCorreo());
+		uDTO.setRol(u.getRol());
+		return uDTO;
 	}
 
 	public void deleteByIdUsuario(int id) {

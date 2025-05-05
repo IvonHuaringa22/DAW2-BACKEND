@@ -1,5 +1,7 @@
 package com.cibertec.ticket.security;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,10 +41,24 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.DELETE, "/api/**").permitAll()
 						.anyRequest().authenticated())
 				.httpBasic();
+		http.cors(); // Habilita CORS usando la configuración por defecto
 		return http.build();
 	}
 
+	//i
+	@Bean
+	public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+	    org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+	    configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+	    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+	    configuration.setAllowedHeaders(List.of("*"));
+	    configuration.setAllowCredentials(true);
 
+	    org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+	    source.registerCorsConfiguration("/**", configuration);
+	    return source;
+	}
+	
 	@Bean
 	public UserDetailsService userDetailsService() {
 

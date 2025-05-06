@@ -81,7 +81,9 @@ public class UsuarioService {
 	}
 
 	public UsuarioDTO updateUsuario(Usuario usuario, int id) {
+		
 		Usuario update = repository.findById(id).orElse(null);
+		
 		if (update == null) {
 			throw new BadCredentialsException("No existe ningún Usuario con ese id");
 		}
@@ -90,7 +92,7 @@ public class UsuarioService {
 		update.setCorreo(usuario.getCorreo());
 		update.setRol(usuario.getRol());
 
-		Usuario u = repository.save(usuario);
+		Usuario u = repository.save(update);
 		UsuarioDTO uDTO = new UsuarioDTO();
 		uDTO.setIdUsuario(u.getIdUsuario());
 		uDTO.setNombre(u.getNombre());

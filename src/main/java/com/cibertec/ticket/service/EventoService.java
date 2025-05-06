@@ -63,7 +63,7 @@ public class EventoService {
 		update.setHora(evento.getHora());
 		update.setDescripcion(evento.getDescripcion());
 
-		return repository.save(evento);
+		return repository.save(update);
 	}
 
 	public void deleteByIdEvento(int id) {

@@ -2,9 +2,13 @@ package com.cibertec.ticket.controller;
 
 import java.util.Optional;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,19 +24,11 @@ public class LoginController {
 
     @Autowired
     private IUsuarioRepository iusuarioRepository;
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        Optional<Usuario> usuarioOpt = iusuarioRepository.findByCorreo(request.getCorreo());
-
-        if (usuarioOpt.isPresent()) {
-            Usuario usuario = usuarioOpt.get();
-            if (usuario.getContrasenia().equals(request.getContrasenia())) {
-                // Login correcto
-                return ResponseEntity.ok(new LoginResponse("OK", usuario.getRol()));
-            }
-        }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
+    
+    @GetMapping("/login")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<Usuario> login(Authentication authentication) {
+        Usuario user = iusuarioRepository.findByCorreo(authentication.getName()).orElse(null);
+        return ResponseEntity.ok(user);
     }
 }

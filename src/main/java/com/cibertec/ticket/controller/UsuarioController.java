@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,13 +30,13 @@ public class UsuarioController {
 	private UsuarioService service;
 
     @GetMapping
- //   @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UsuarioDTO>> findAllUsuario() {
         return ResponseEntity.ok(service.findAllUsuario());
     }
 
     @GetMapping("/{id}")
- //   @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsuarioDTO> findByIdUsuario(@PathVariable int id) {
         UsuarioDTO usuario = service.findByIdUsuario(id);
         if (usuario != null) {
@@ -50,13 +52,13 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
- //   @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsuarioDTO> updateUsuario(@RequestBody Usuario usuario, @PathVariable int id) {
         return ResponseEntity.ok(service.updateUsuario(usuario, id));
     }
 
     @DeleteMapping("/{id}")
-  //  @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteByIdUsuario(@PathVariable int id) {
         service.deleteByIdUsuario(id);
         return ResponseEntity.noContent().build();

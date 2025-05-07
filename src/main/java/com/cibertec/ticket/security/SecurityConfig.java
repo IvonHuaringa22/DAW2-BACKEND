@@ -36,9 +36,9 @@ public class SecurityConfig {
 		http.csrf().disable() // Deshabilita CSRF para la API de prueba
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-						.requestMatchers(HttpMethod.POST, "/api/**").permitAll()
-						.requestMatchers(HttpMethod.PUT, "/api/**").permitAll()
-						.requestMatchers(HttpMethod.DELETE, "/api/**").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/**").authenticated()
+						.requestMatchers(HttpMethod.PUT, "/api/**").authenticated()
+						.requestMatchers(HttpMethod.DELETE, "/api/**").authenticated()
 						.anyRequest().authenticated())
 				.httpBasic();
 		http.cors(); // Habilita CORS usando la configuración por defecto

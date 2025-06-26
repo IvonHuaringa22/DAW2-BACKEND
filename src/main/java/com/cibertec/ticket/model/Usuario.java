@@ -1,5 +1,7 @@
 package com.cibertec.ticket.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,4 +30,7 @@ public class Usuario {
     
     @Column(name = "rol", nullable = false)
     private String rol;
+    
+    @Column(name = "fecha_login")
+    private LocalDateTime fechaLogin;
 }

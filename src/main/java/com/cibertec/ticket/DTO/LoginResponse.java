@@ -1,28 +1,18 @@
 package com.cibertec.ticket.DTO;
 
+import lombok.Data;
+
+@Data
 public class LoginResponse {
 	private String mensaje;
     private String rol;
+	private String token;
+	private String fechaLogin;
 
-    public LoginResponse(String mensaje, String rol) {
+    public LoginResponse(String mensaje, String rol, String token, String fechaLogin) {
         this.mensaje = mensaje;
         this.rol = rol;
-    }
-
-    // Getters y Setters
-    public String getMensaje() {
-        return mensaje;
-    }
-
-    public void setMensaje(String mensaje) {
-        this.mensaje = mensaje;
-    }
-
-    public String getRol() {
-        return rol;
-    }
-
-    public void setRol(String rol) {
-        this.rol = rol;
+        this.token = token;
+        this.fechaLogin = fechaLogin;
     }
 }

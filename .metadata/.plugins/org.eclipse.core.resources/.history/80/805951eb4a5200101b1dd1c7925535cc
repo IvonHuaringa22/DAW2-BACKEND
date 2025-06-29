@@ -1,0 +1,5 @@
+package com.cibertec.ticket.DTO;
+
+public class CompraDTO {
+
+}

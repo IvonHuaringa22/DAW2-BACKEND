@@ -1,0 +1,14 @@
+# Usa una imagen oficial de Java
+FROM openjdk:17-jdk-alpine
+
+# Crea un directorio para la app
+WORKDIR /app
+
+# Copia el JAR generado por Maven
+COPY target/ticketDSW-0.0.1-SNAPSHOT.jar app.jar
+
+# Expone el puerto ( según corresponda)
+EXPOSE 8091
+
+# Comando para correr tu app
+ENTRYPOINT ["java", "-jar", "app.jar"]

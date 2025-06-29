@@ -1,0 +1,11 @@
+package com.cibertec.ticket.client;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+@FeignClient(name = "ms-auth", url = "http://localhost:8080/api/usuario")
+public interface UsuarioClient {
+	@GetMapping("/{id}")
+    UsuarioDTO getUsuarioById(@PathVariable("id") int id);
+}

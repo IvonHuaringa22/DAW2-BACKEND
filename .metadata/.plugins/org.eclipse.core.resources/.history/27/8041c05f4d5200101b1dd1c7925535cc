@@ -1,0 +1,5 @@
+package com.cibertec.ticket.config;
+
+public class RestConfig {
+
+}

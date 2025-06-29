@@ -7,7 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import com.cibertec.ticket.model.Usuario;
 
+
 @Repository
 public interface IUsuarioRepository extends JpaRepository<Usuario, Integer>{
+	
 	Optional<Usuario> findByCorreo(String correo);
+	
 }

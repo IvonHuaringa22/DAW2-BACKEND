@@ -1,0 +1,15 @@
+package com.cibertec.ticket.DTO;
+
+import java.time.LocalDateTime;
+
+import lombok.Data;
+
+@Data
+public class CompraDTO {
+	private Integer idCompra;
+    private Integer idUsuario;
+    private LocalDateTime fechaCompra;
+    private String metodoPago;
+    private Boolean estadoPago;
+    private Usuario usuario;
+}

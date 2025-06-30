@@ -1,5 +1,0 @@
-package com.cibertec.ticket.client;
-
-public interface UsuarioClient {
-
-}

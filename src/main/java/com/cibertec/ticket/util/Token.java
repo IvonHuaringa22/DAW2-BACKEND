@@ -1,11 +1,12 @@
 package com.cibertec.ticket.util;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -16,35 +17,42 @@ public class Token {
 	private final static String TOKEN_SECRETO = "A3xV9Jt7FkQp1WmBnLzYcTrUeGiK8Hd2";
 	private final static Long TOKEN_DURACION = 1_500_000L;
 
-    public static String crearToken(String username, String email) {
-		long expiracionTiempo = TOKEN_DURACION;
-		Date expiracionFecha = new Date(System.currentTimeMillis() + expiracionTiempo);
-		
-		Map<String, Object> map = new HashMap<>();
-		map.put("nombre", username);
-    	
-        return Jwts.builder()
-                .setSubject(email)
-                .setExpiration(expiracionFecha)
-				.addClaims(map)
-				.signWith(Keys.hmacShaKeyFor(TOKEN_SECRETO.getBytes()))
-				.compact();
+	public static String crearToken(String nombre, String email, String rol) {
+	    long expiracionTiempo = TOKEN_DURACION;
+	    Date expiracionFecha = new Date(System.currentTimeMillis() + expiracionTiempo);
+
+	    Map<String, Object> claims = new HashMap<>();
+	    claims.put("nombre", nombre);
+	    claims.put("rol", rol);
+
+	    return Jwts.builder()
+	            .setSubject(email)
+	            .setExpiration(expiracionFecha)
+	            .addClaims(claims)
+	            .signWith(Keys.hmacShaKeyFor(TOKEN_SECRETO.getBytes()))
+	            .compact();
     }
 
-    public static UsernamePasswordAuthenticationToken getAuth (String token) {
-    	
-    	try {
-			Claims claims = Jwts.parserBuilder()
-					.setSigningKey(TOKEN_SECRETO.getBytes())
-					.build()
-					.parseClaimsJws(token)
-					.getBody();
-			
-			String email = claims.getSubject();
-    	
-			return new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
-		} catch (JwtException e) {
-			return null;
-		}
-    }
+	public static UsernamePasswordAuthenticationToken getAuth(String token) {
+	    try {
+	        Claims claims = Jwts.parserBuilder()
+	                .setSigningKey(TOKEN_SECRETO.getBytes())
+	                .build()
+	                .parseClaimsJws(token)
+	                .getBody();
+
+	        String email = claims.getSubject();
+	        String rol = (String) claims.get("rol");
+
+	        if (email != null && rol != null) {
+	            SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + rol);
+	            return new UsernamePasswordAuthenticationToken(email, null, List.of(authority));
+	        }
+
+	        return null;
+
+	    } catch (JwtException e) {
+	        return null;
+	    }
+	}
 }

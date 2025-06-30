@@ -61,7 +61,7 @@ public class LoginController {
 	            iusuarioRepository.save(usuario);
 	            
 	            // Crea token JWT
-	            String tokenJwt = Token.crearToken(usuario.getNombre(), usuario.getCorreo());
+	            String tokenJwt = Token.crearToken(usuario.getNombre(), usuario.getCorreo(), usuario.getRol());
 	            
 	         // Crear respuesta incluyendo fecha
 	            LoginResponse response = new LoginResponse(

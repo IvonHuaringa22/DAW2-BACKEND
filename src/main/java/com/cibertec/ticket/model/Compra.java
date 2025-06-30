@@ -32,7 +32,7 @@ public class Compra {
 	public String metodoPago;
 	
 	@Column(name = "estado_pago", nullable = false)
-	public Boolean estadoPago;
+	public String estadoPago;
 	
 
 	@ManyToOne

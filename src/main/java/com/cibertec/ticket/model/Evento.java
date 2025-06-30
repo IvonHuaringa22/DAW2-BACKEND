@@ -2,12 +2,14 @@ package com.cibertec.ticket.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -37,4 +39,10 @@ public class Evento {
     
     @Column(name = "descripcion", nullable = false)
     private String descripcion;
+    
+    @Column(name = "disponibilidad", nullable = false)
+    private String disponibilidad;
+    
+    @OneToMany(mappedBy = "evento")
+    private List<Zona> zonas;
 }

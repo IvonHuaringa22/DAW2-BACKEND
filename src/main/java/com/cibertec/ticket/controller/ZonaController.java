@@ -60,4 +60,11 @@ public class ZonaController {
         service.deleteByIdZona(id);
         return ResponseEntity.noContent().build();
     }
+    
+    @GetMapping("/evento/{idEvento}")
+    public ResponseEntity<List<Zona>> obtenerZonasPorEvento(@PathVariable Integer idEvento) {
+    	List<Zona> zonas = service.obtenerZonasPorEvento(idEvento);
+        return ResponseEntity.ok(zonas);
+    }
+
 }

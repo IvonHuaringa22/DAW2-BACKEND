@@ -3,6 +3,7 @@ package com.cibertec.ticket.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
@@ -73,4 +74,9 @@ public class ZonaService {
 		}
 		repository.delete(delete);
 	}
+	
+    public List<Zona> obtenerZonasPorEvento(int idEvento) {
+        return repository.findByIdEvento(idEvento);
+    }
+
 }

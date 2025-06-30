@@ -1,5 +1,6 @@
 package com.cibertec.ticket.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,19 +34,33 @@ public class CompraService {
 	}
 
 	public Compra saveCompra(Compra compra) {
-		if (compra.getIdUsuario() == null) {
-			throw new IllegalArgumentException("ID de usuario es obligatorio.");
-		}
-		if (compra.getFechaCompra() == null) {
-			throw new IllegalArgumentException("Fecha de compra es obligatoria.");
-		}
+	    // Validación mínima: método de pago no puede ser nulo o vacío
 		if (compra.getMetodoPago() == null || compra.getMetodoPago().isEmpty()) {
-			throw new IllegalArgumentException("Método de pago es obligatorio.");
+		    throw new IllegalArgumentException("Método de pago es obligatorio.");
 		}
-		if (compra.getEstadoPago() == null) {
-			throw new IllegalArgumentException("Estado de pago es obligatorio.");
+
+		String metodo = compra.getMetodoPago().toUpperCase();
+
+		if (!metodo.equals("TARJETA") && !metodo.equals("EFECTIVO")) {
+		    throw new IllegalArgumentException("Método de pago no válido. Solo se permite TARJETA o EFECTIVO.");
 		}
-		return repository.save(compra);
+
+		if (metodo.equals("TARJETA")) {
+		    compra.setEstadoPago("Pendiente");
+		} else {
+		    compra.setEstadoPago("Pagado");
+		}
+
+	    // Asignar fecha actual si no viene definida
+	    if (compra.getFechaCompra() == null) {
+	        compra.setFechaCompra(LocalDateTime.now());
+	    }
+	    // Validar que el ID de usuario esté presente
+	    if (compra.getIdUsuario() == null) {
+	        throw new IllegalArgumentException("ID de usuario es obligatorio.");
+	    }
+
+	    return repository.save(compra);
 	}
 
 	public Compra updateCompra(Compra compra, int id) {
@@ -54,9 +69,6 @@ public class CompraService {
 			throw new BadCredentialsException("No existe ninguna Compra con ese id");
 		}
 
-		update.setIdUsuario(compra.getIdUsuario());
-		update.setFechaCompra(compra.getFechaCompra());
-		update.setMetodoPago(compra.getMetodoPago());
 		update.setEstadoPago(compra.getEstadoPago());
 
 		return repository.save(update);

@@ -33,7 +33,7 @@ public class EventoController {
     }
 
     @GetMapping("/{id}")
-     @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Evento> findByIdEvento(@PathVariable int id) {
         Evento evento = service.findByIdEvento(id);
         if (evento != null) {
@@ -44,21 +44,26 @@ public class EventoController {
     }
 
     @PostMapping
-      @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Evento> saveEvento(@RequestBody Evento evento) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.saveEvento(evento));
     }
 
     @PutMapping("/{id}")
-      @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Evento> updateEvento(@RequestBody Evento evento, @PathVariable int id) {
         return ResponseEntity.ok(service.updateEvento(evento, id));
     }
 
     @DeleteMapping("/{id}")
-      @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteByIdEvento(@PathVariable int id) {
         service.deleteByIdEvento(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    @PutMapping("/eliminarLogico/{id}")
+	public ResponseEntity<?> eliminarLogico(@PathVariable int id) {
+        return service.EliminarLogicoEvento(id);
     }
 }

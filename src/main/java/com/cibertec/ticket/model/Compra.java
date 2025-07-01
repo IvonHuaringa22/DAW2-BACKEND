@@ -34,7 +34,6 @@ public class Compra {
 	@Column(name = "estado_pago", nullable = false)
 	public String estadoPago;
 	
-
 	@ManyToOne
 	@JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario", insertable = false, updatable = false)
 	private Usuario usuario;

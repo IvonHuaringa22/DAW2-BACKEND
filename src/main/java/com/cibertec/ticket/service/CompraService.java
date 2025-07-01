@@ -2,19 +2,38 @@ package com.cibertec.ticket.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.cibertec.ticket.DTO.CompraRequestDTO;
 import com.cibertec.ticket.model.Compra;
+import com.cibertec.ticket.model.Ticket;
+import com.cibertec.ticket.model.Usuario;
+import com.cibertec.ticket.model.Zona;
 import com.cibertec.ticket.repository.ICompraRepository;
+import com.cibertec.ticket.repository.IUsuarioRepository;
+import com.cibertec.ticket.repository.IZonaRepository;
 
 @Service
 public class CompraService {
 
 	@Autowired
 	private ICompraRepository repository;
+	
+	@Autowired
+	private IUsuarioRepository usuarioRepository;
+	
+	@Autowired
+	private IZonaRepository zonaRepository;
+	
+	@Autowired
+	private TicketService ticketService;
+
 
 	public List<Compra> findAllCompra() {
 		List<Compra> list = repository.findAll();
@@ -33,34 +52,44 @@ public class CompraService {
 		}
 	}
 
-	public Compra saveCompra(Compra compra) {
-	    // Validación mínima: método de pago no puede ser nulo o vacío
-		if (compra.getMetodoPago() == null || compra.getMetodoPago().isEmpty()) {
-		    throw new IllegalArgumentException("Método de pago es obligatorio.");
-		}
+	public Compra saveCompra(CompraRequestDTO dto) {
+	    // 1. Validar método de pago
+	    String metodo = Optional.ofNullable(dto.getMetodoPago())
+	        .map(String::toUpperCase)
+	        .orElseThrow(() -> new IllegalArgumentException("Método de pago es obligatorio."));
 
-		String metodo = compra.getMetodoPago().toUpperCase();
-
-		if (!metodo.equals("TARJETA") && !metodo.equals("EFECTIVO")) {
-		    throw new IllegalArgumentException("Método de pago no válido. Solo se permite TARJETA o EFECTIVO.");
-		}
-
-		if (metodo.equals("TARJETA")) {
-		    compra.setEstadoPago("Pendiente");
-		} else {
-		    compra.setEstadoPago("Pagado");
-		}
-
-	    // Asignar fecha actual si no viene definida
-	    if (compra.getFechaCompra() == null) {
-	        compra.setFechaCompra(LocalDateTime.now());
-	    }
-	    // Validar que el ID de usuario esté presente
-	    if (compra.getIdUsuario() == null) {
-	        throw new IllegalArgumentException("ID de usuario es obligatorio.");
+	    if (!metodo.equals("TARJETA") && !metodo.equals("EFECTIVO")) {
+	        throw new IllegalArgumentException("Método de pago inválido. Solo TARJETA o EFECTIVO.");
 	    }
 
-	    return repository.save(compra);
+	    // 2. Verificar zona seleccionada
+	    Zona zona = zonaRepository.findById(dto.getIdZonaSeleccionada())
+	        .orElseThrow(() -> new IllegalArgumentException("Zona no encontrada."));
+
+	    // 3. Obtener usuario autenticado
+	    String correo = SecurityContextHolder.getContext().getAuthentication().getName();
+	    Usuario usuario = usuarioRepository.findByCorreo(correo)
+	        .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado."));
+
+	    // 4. Crear y guardar Compra
+	    Compra compra = new Compra();
+	    compra.setMetodoPago(metodo);
+	    compra.setEstadoPago(metodo.equals("TARJETA") ? "Pendiente" : "Pagado");
+	    compra.setFechaCompra(LocalDateTime.now());
+	    compra.setIdUsuario(usuario.getIdUsuario());
+
+	    Compra saved = repository.save(compra);
+
+	    // 5. Generar los tickets según la cantidad solicitada
+	    int cantidad = Optional.ofNullable(dto.getCantidad()).orElse(1);
+	    for (int i = 0; i < cantidad; i++) {
+	        Ticket ticket = new Ticket();
+	        ticket.setIdCompra(saved.getIdCompra());
+	        ticket.setIdZona(dto.getIdZonaSeleccionada());
+	        ticketService.saveTicket(ticket);
+	    }
+
+	    return saved;
 	}
 
 	public Compra updateCompra(Compra compra, int id) {

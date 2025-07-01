@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cibertec.ticket.DTO.CompraRequestDTO;
 import com.cibertec.ticket.model.Compra;
 import com.cibertec.ticket.service.CompraService;
 
@@ -35,16 +37,18 @@ public class CompraController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(service.findByIdCompra(id));
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
-	public ResponseEntity<Compra> saveCompra(Compra compra) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(service.saveCompra(compra));
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<String> saveCompra(@RequestBody CompraRequestDTO compraDTO) {
+	    service.saveCompra(compraDTO);
+	    return ResponseEntity.status(HttpStatus.CREATED).body("Compra realizada correctamente.");
 	}
+
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
 	public ResponseEntity<Compra> updateCompra(Compra compra) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(service.saveCompra(compra));
+		return ResponseEntity.status(HttpStatus.CREATED).body(service.updateCompra(compra, 0));
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")

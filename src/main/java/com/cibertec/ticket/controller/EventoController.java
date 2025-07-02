@@ -31,6 +31,12 @@ public class EventoController {
     public ResponseEntity<List<Evento>> findAllEvento() {
         return ResponseEntity.ok(service.findAllEvento());
     }
+    
+    @GetMapping("/listarDisponibles")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+	public ResponseEntity<?> ListarEventosDisponibles() {
+		return service.ListarPorDisponibilidad();
+	}
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -42,6 +48,7 @@ public class EventoController {
             return ResponseEntity.notFound().build();
         }
     }
+    
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")

@@ -1,5 +1,6 @@
 package com.cibertec.ticket.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
+import com.cibertec.ticket.DTO.ZonaDTO;
 import com.cibertec.ticket.model.Zona;
 import com.cibertec.ticket.repository.IZonaRepository;
 
@@ -15,22 +17,49 @@ public class ZonaService {
 
 	@Autowired
 	private IZonaRepository repository;
+	
+	public List<ZonaDTO> findAllZonaDTO() {
+	    List<Zona> zonas = repository.findAll();
+	    List<ZonaDTO> zonaDTOs = new ArrayList<>();
 
-	public List<Zona> findAllZona() {
-		List<Zona> list = repository.findAll();
-		if (list.isEmpty()) {
-			return repository.findAll();
-		} else {
-			return null;
-		}
+	    for (Zona zona : zonas) {
+	        ZonaDTO dto = new ZonaDTO();
+	        dto.setIdZona(zona.getIdZona());
+	        dto.setNombreZona(zona.getNombreZona());
+	        dto.setPrecio(zona.getPrecio());
+	        dto.setCapacidad(zona.getCapacidad());
+	        dto.setIdEvento(zona.getIdEvento());
+
+	        // Evita NullPointer si por alguna razón evento es null
+	        if (zona.getEvento() != null) {
+	            dto.setNombreEvento(zona.getEvento().getNombreEvento());
+	        }
+
+	        zonaDTOs.add(dto);
+	    }
+	    return zonaDTOs;
 	}
-
-	public Zona findByIdZona(int id) {
-		if (id >= 1) {
-			return repository.findById(id).orElse(null);
-		} else {
-			return null;
+	
+	public ZonaDTO findByIdZona(int id) {
+		
+		if (id < 1) {
+	        return null;
+	    }
+		Zona zona = repository.findById(id).orElse(null);
+		if (zona == null) {
+	        return null;
+	    }
+		
+		ZonaDTO dto = new ZonaDTO();
+		dto.setIdZona(zona.getIdZona());
+		dto.setNombreZona(zona.getNombreZona());
+		dto.setPrecio(zona.getPrecio());
+		dto.setCapacidad(zona.getCapacidad());
+		dto.setIdEvento(zona.getIdEvento());
+		if (zona.getEvento() != null) {
+		   dto.setNombreEvento(zona.getEvento().getNombreEvento());  
 		}
+		return dto;
 	}
 
 	public Zona saveZona(Zona zona) {

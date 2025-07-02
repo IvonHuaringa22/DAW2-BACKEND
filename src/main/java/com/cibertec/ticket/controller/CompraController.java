@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,11 +26,13 @@ public class CompraController {
 	@Autowired
 	private CompraService service;
 	
-	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<List<Compra>> findAllCompra() {
-		return ResponseEntity.status(HttpStatus.CREATED).body(service.findAllCompra());
+	    List<Compra> compras = service.findAllCompra();
+	    return ResponseEntity.ok(compras);
 	}
+
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{id}")
@@ -45,11 +48,12 @@ public class CompraController {
 	}
 
 	
-	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
-	public ResponseEntity<Compra> updateCompra(Compra compra) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(service.updateCompra(compra, 0));
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Compra> updateCompra(@RequestBody Compra compra, @PathVariable int id) {
+	    return ResponseEntity.ok(service.updateCompra(compra, id));
 	}
+
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")

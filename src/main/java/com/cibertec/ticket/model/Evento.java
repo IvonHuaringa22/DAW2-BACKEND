@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -43,6 +45,8 @@ public class Evento {
     @Column(name = "disponibilidad", nullable = false)
     private String disponibilidad;
     
+    
     @OneToMany(mappedBy = "evento")
+    @JsonManagedReference
     private List<Zona> zonas;
 }

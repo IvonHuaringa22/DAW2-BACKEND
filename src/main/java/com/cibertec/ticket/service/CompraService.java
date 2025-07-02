@@ -36,12 +36,8 @@ public class CompraService {
 
 
 	public List<Compra> findAllCompra() {
-		List<Compra> list = repository.findAll();
-		if (list.isEmpty()) {
-			return repository.findAll();
-		} else {
-			return null;
-		}
+		return repository.findAll();
+
 	}
 
 	public Compra findByIdCompra(int id) {
@@ -51,7 +47,7 @@ public class CompraService {
 			return null;
 		}
 	}
-
+	
 	public Compra saveCompra(CompraRequestDTO dto) {
 	    // 1. Validar método de pago
 	    String metodo = Optional.ofNullable(dto.getMetodoPago())
@@ -62,16 +58,13 @@ public class CompraService {
 	        throw new IllegalArgumentException("Método de pago inválido. Solo TARJETA o EFECTIVO.");
 	    }
 
-	    // 2. Verificar zona seleccionada
 	    Zona zona = zonaRepository.findById(dto.getIdZonaSeleccionada())
 	        .orElseThrow(() -> new IllegalArgumentException("Zona no encontrada."));
 
-	    // 3. Obtener usuario autenticado
 	    String correo = SecurityContextHolder.getContext().getAuthentication().getName();
 	    Usuario usuario = usuarioRepository.findByCorreo(correo)
 	        .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado."));
 
-	    // 4. Crear y guardar Compra
 	    Compra compra = new Compra();
 	    compra.setMetodoPago(metodo);
 	    compra.setEstadoPago(metodo.equals("TARJETA") ? "Pendiente" : "Pagado");
@@ -79,8 +72,7 @@ public class CompraService {
 	    compra.setIdUsuario(usuario.getIdUsuario());
 
 	    Compra saved = repository.save(compra);
-
-	    // 5. Generar los tickets según la cantidad solicitada
+	    
 	    int cantidad = Optional.ofNullable(dto.getCantidad()).orElse(1);
 	    for (int i = 0; i < cantidad; i++) {
 	        Ticket ticket = new Ticket();
@@ -88,7 +80,6 @@ public class CompraService {
 	        ticket.setIdZona(dto.getIdZonaSeleccionada());
 	        ticketService.saveTicket(ticket);
 	    }
-
 	    return saved;
 	}
 

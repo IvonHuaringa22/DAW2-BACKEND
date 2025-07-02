@@ -9,5 +9,5 @@ import com.cibertec.ticket.model.Evento;
 
 @Repository
 public interface IEventoRepository extends JpaRepository<Evento, Integer>{
-	List<Evento> findByVisible(String visible);
+	List<Evento> findByDisponibilidad(String disponibilidad);
 }

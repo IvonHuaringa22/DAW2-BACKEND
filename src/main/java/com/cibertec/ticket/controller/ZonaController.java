@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cibertec.ticket.DTO.ZonaDTO;
 import com.cibertec.ticket.model.Zona;
 import com.cibertec.ticket.service.ZonaService;
 
@@ -25,16 +26,17 @@ public class ZonaController {
 	@Autowired
 	private ZonaService service;
 
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Zona>> findAllZona() {
-        return ResponseEntity.ok(service.findAllZona());
-    }
+	@GetMapping
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<List<ZonaDTO>> listarZonas() {
+	    List<ZonaDTO> zonas = service.findAllZonaDTO();
+	    return ResponseEntity.ok(zonas);
+	}
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Zona> findByIdZona(@PathVariable int id) {
-        Zona zona = service.findByIdZona(id);
+    public ResponseEntity<ZonaDTO> findByIdZona(@PathVariable int id) {
+        ZonaDTO zona = service.findByIdZona(id);
         if (zona != null) {
             return ResponseEntity.ok(zona);
         } else {

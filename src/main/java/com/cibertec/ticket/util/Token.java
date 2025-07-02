@@ -41,18 +41,18 @@ public class Token {
 	                .parseClaimsJws(token)
 	                .getBody();
 
-	        String email = claims.getSubject();
-	        String rol = (String) claims.get("rol");
+	        String correo = claims.getSubject();
+	        String rol = claims.get("rol", String.class);
 
-	        if (email != null && rol != null) {
-	            SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + rol);
-	            return new UsernamePasswordAuthenticationToken(email, null, List.of(authority));
+	        if (correo != null && rol != null) {
+	            var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + rol));
+	            return new UsernamePasswordAuthenticationToken(correo, null, authorities);
 	        }
 
-	        return null;
-
 	    } catch (JwtException e) {
-	        return null;
+	        System.out.println("Token inválido: " + e.getMessage());
 	    }
+
+	    return null;
 	}
 }

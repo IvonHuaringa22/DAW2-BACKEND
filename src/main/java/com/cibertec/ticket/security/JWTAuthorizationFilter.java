@@ -26,7 +26,11 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter{
 		if( bearerToken != null && bearerToken.startsWith("Bearer ") ) {
 			String token = bearerToken.replace("Bearer ", "");
 			UsernamePasswordAuthenticationToken userPAT = Token.getAuth(token);
-			SecurityContextHolder.getContext().setAuthentication(userPAT);
+			if (userPAT != null) {
+		        SecurityContextHolder.getContext().setAuthentication(userPAT);
+		    } else {
+		        System.out.println("❌ Token no autorizado o no contiene credenciales válidas");
+		    }
 		}
 		filterChain.doFilter(request, response);
 		

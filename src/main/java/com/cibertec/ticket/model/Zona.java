@@ -1,5 +1,7 @@
 package com.cibertec.ticket.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,6 +35,7 @@ public class Zona {
     private Integer capacidad;
 
 	@ManyToOne
+	@JsonBackReference
 	@JoinColumn(name = "id_evento", referencedColumnName = "id_evento", insertable = false, updatable = false)
 	private Evento evento;
 }

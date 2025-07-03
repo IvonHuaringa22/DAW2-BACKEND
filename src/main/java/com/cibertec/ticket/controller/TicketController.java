@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cibertec.ticket.DTO.TicketDetalleDTO;
+import com.cibertec.ticket.model.Compra;
 import com.cibertec.ticket.model.Ticket;
 import com.cibertec.ticket.service.TicketService;
 
@@ -25,11 +27,12 @@ public class TicketController {
 	@Autowired
 	private TicketService service;
 
-    @GetMapping
-    
-    public ResponseEntity<List<Ticket>> findAllTicket() {
-        return ResponseEntity.ok(service.findAllTicket());
-    }
+	@GetMapping
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<List<Ticket>> findAllCompra() {
+	    List<Ticket> tickets = service.findAllTicket();
+	    return ResponseEntity.ok(tickets);
+	}
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -40,6 +43,12 @@ public class TicketController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/detalle")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<TicketDetalleDTO>> listarTicketsDetallados() {
+        return ResponseEntity.ok(service.listarTicketsConDetalle());
     }
 
     @PostMapping

@@ -1,8 +1,12 @@
 package com.cibertec.ticket.service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +35,15 @@ public class EventoService {
 			return null;
 		}
 	}
+	
+	public ResponseEntity<List<Evento>> ListarPorDisponibilidad() {
+		List<Evento> eventosDisponibles = repository.findByDisponibilidad("Disponible");
+	    if (eventosDisponibles.isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	    } else {
+	        return ResponseEntity.status(HttpStatus.OK).body(eventosDisponibles);
+	    }
+	}
 
 	public Evento saveEvento(Evento evento) {
 		if (evento.getNombreEvento() == null) {
@@ -42,8 +55,8 @@ public class EventoService {
 		if (evento.getLugar() == null) {
 			throw new IllegalArgumentException("Lugar es obligatorio.");
 		}
-		if (evento.getFecha() == null) {
-			throw new IllegalArgumentException("Fecha es obligatorio.");
+		if (evento.getFecha().isBefore(LocalDate.now().plusDays(1))) {
+		    throw new IllegalArgumentException("La fecha del evento debe ser posterior al día de hoy.");
 		}
 		if (evento.getHora() == null) {
 			throw new IllegalArgumentException("Hora es obligatorio.");
@@ -51,6 +64,13 @@ public class EventoService {
 		if (evento.getDescripcion() == null) {
 			throw new IllegalArgumentException("Descripcion es obligatorio.");
 		}
+		String disponibilidad = evento.getDisponibilidad().trim().toLowerCase();
+	    if (!disponibilidad.equals("disponible") && !disponibilidad.equals("no disponible")) {
+	        throw new IllegalArgumentException("Disponibilidad debe ser 'Disponible' o 'No disponible'.");
+	    }
+	    evento.setDisponibilidad(disponibilidad.equals("disponible") ? "Disponible" : "No disponible");
+
+
 		return repository.save(evento);
 	}
 
@@ -62,6 +82,7 @@ public class EventoService {
 		update.setFecha(evento.getFecha());
 		update.setHora(evento.getHora());
 		update.setDescripcion(evento.getDescripcion());
+		update.setDisponibilidad(evento.getDisponibilidad());
 
 		return repository.save(update);
 	}
@@ -76,6 +97,24 @@ public class EventoService {
 			throw new BadCredentialsException("No existe ningun Evento con ese id");
 		}
 		repository.delete(delete);
-
 	}
+	
+	public ResponseEntity<?> EliminarLogicoEvento(int id) {
+		Optional<Evento> eventoEliminarLogico = repository.findById(id);
+		
+		if(eventoEliminarLogico.isPresent()) {
+			Evento eventoEli = eventoEliminarLogico.get();
+			eventoEli.setDisponibilidad("No Disponible");
+			try {
+				repository.save(eventoEli);
+				return ResponseEntity.ok(eventoEli);
+			} catch (Exception e) {
+				System.out.println("Ocurrio algo inesperado, error: " + e.getMessage());
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+			}
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();	
+		}
+	}
+
 }

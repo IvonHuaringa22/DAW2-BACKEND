@@ -25,6 +25,7 @@ public class Token {
 	    claims.put("nombre", nombre);
 	    claims.put("rol", rol);
 
+
 	    return Jwts.builder()
 	            .setSubject(email)
 	            .setExpiration(expiracionFecha)
